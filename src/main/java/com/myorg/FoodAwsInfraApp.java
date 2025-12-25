@@ -17,6 +17,10 @@ public class FoodAwsInfraApp {
 
         clusterStack.addDependency(vpcStack);
 
+        FoodServiceStack foodServiceStack = new FoodServiceStack(app,"FoodService",clusterStack.getCluster());
+
+        foodServiceStack.addDependency(clusterStack);
+
         app.synth();
     }
 }
