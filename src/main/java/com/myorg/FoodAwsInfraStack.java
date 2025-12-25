@@ -7,6 +7,7 @@ import software.constructs.Construct;
 
 public class FoodAwsInfraStack extends Stack {
     public FoodAwsInfraStack(final Construct scope, final String id) {
+
         this(scope, id, null);
     }
 

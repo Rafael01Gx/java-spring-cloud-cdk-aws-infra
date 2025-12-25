@@ -7,6 +7,9 @@ import software.constructs.Construct;
 
 
 public class VpcStack extends Stack {
+
+    private Vpc vpc;
+
     public VpcStack(final Construct scope, final String id) {
         this(scope, id, null);
     }
@@ -14,8 +17,12 @@ public class VpcStack extends Stack {
     public VpcStack(final Construct scope, final String id, final StackProps props) {
         super(scope, id, props);
 
-        Vpc vpc = Vpc.Builder.create(this, "FoodVpc")
+        vpc = Vpc.Builder.create(this, "FoodVpc")
                 .maxAzs(3)
                 .build();
+    }
+
+    public Vpc getVpc(){
+        return vpc;
     }
 }
