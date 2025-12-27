@@ -1,14 +1,9 @@
 package com.myorg;
 
-import software.amazon.awscdk.Fn;
-import software.amazon.awscdk.RemovalPolicy;
-import software.amazon.awscdk.Stack;
-import software.amazon.awscdk.StackProps;
+import software.amazon.awscdk.*;
+import software.amazon.awscdk.services.applicationautoscaling.EnableScalingProps;
 import software.amazon.awscdk.services.ecr.IRepository;
-import software.amazon.awscdk.services.ecs.AwsLogDriverProps;
-import software.amazon.awscdk.services.ecs.Cluster;
-import software.amazon.awscdk.services.ecs.ContainerImage;
-import software.amazon.awscdk.services.ecs.LogDriver;
+import software.amazon.awscdk.services.ecs.*;
 import software.amazon.awscdk.services.ecs.patterns.ApplicationLoadBalancedFargateService;
 import software.amazon.awscdk.services.ecs.patterns.ApplicationLoadBalancedTaskImageOptions;
 import software.amazon.awscdk.services.logs.LogGroup;
@@ -34,11 +29,11 @@ public class FoodServiceStack extends Stack {
 
         IRepository iRepositorio = fromRepositoryName(this,"repositorio","img-pedidos-ms");
 
-        ApplicationLoadBalancedFargateService.Builder.create(this,"FoodService")
+          ApplicationLoadBalancedFargateService foodFargateService = ApplicationLoadBalancedFargateService.Builder.create(this,"FoodService")
                 .serviceName("food-service")
                 .cluster(cluster)
                 .cpu(512)
-                .desiredCount(1)
+                .desiredCount(1) //Number of instances of the task definition to place and keep running
                 .listenerPort(8080)
                 .taskImageOptions(
                         ApplicationLoadBalancedTaskImageOptions.builder()
@@ -65,5 +60,24 @@ public class FoodServiceStack extends Stack {
                 .publicLoadBalancer(true)
                 .assignPublicIp(true)
                 .build();
+
+
+        ScalableTaskCount scalableTarget = foodFargateService.getService().autoScaleTaskCount(
+                EnableScalingProps.builder()
+                        .minCapacity(1)
+                        .maxCapacity(3)
+                        .build());
+        scalableTarget.scaleOnCpuUtilization("CpuScaling",
+                CpuUtilizationScalingProps.builder()
+                        .targetUtilizationPercent(80)
+                        .scaleInCooldown(Duration.minutes(3))
+                        .scaleOutCooldown(Duration.minutes(2))
+                        .build());
+        scalableTarget.scaleOnMemoryUtilization("MemoryScaling",
+                MemoryUtilizationScalingProps.builder()
+                        .targetUtilizationPercent(85)
+                        .scaleInCooldown(Duration.minutes(3))
+                        .scaleOutCooldown(Duration.minutes(2))
+                        .build());
     }
 }
