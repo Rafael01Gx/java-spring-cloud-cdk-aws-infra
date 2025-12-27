@@ -21,6 +21,7 @@ public class FoodAwsInfraApp {
 
         FoodServiceStack foodServiceStack = new FoodServiceStack(app,"FoodService",clusterStack.getCluster());
         foodServiceStack.addDependency(clusterStack);
+        foodServiceStack.addDependency(rdsBdStack);
 
 
 
