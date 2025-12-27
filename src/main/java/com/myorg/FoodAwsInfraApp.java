@@ -14,12 +14,15 @@ public class FoodAwsInfraApp {
         VpcStack vpcStack = new VpcStack(app, "Vpc");
 
         ClusterStack clusterStack = new ClusterStack(app,"Cluster",vpcStack.getVpc());
-
         clusterStack.addDependency(vpcStack);
 
-        FoodServiceStack foodServiceStack = new FoodServiceStack(app,"FoodService",clusterStack.getCluster());
+        RdsBdStack rdsBdStack = new RdsBdStack(app,"RdsDB",vpcStack.getVpc());
+        rdsBdStack.addDependency(vpcStack);
 
+        FoodServiceStack foodServiceStack = new FoodServiceStack(app,"FoodService",clusterStack.getCluster());
         foodServiceStack.addDependency(clusterStack);
+
+
 
         app.synth();
     }

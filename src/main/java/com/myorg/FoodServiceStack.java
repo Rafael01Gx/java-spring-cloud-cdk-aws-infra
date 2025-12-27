@@ -10,11 +10,11 @@ import software.constructs.Construct;
 
 public class FoodServiceStack extends Stack {
 
-    public FoodServiceStack (final Construct scope, final String id, Cluster cluster) {
+    public FoodServiceStack (final Construct scope, final String id,final Cluster cluster) {
         this(scope,id,null,cluster);
     }
 
-    public FoodServiceStack (final Construct scope, final String id,final StackProps props, Cluster cluster) {
+    public FoodServiceStack (final Construct scope, final String id,final StackProps props,final Cluster cluster) {
         super(scope,id,props);
         ApplicationLoadBalancedFargateService.Builder.create(this,"FoodService")
                 .serviceName("food-service")
